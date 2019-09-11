@@ -50,6 +50,12 @@ class Main extends Component {
         const { newRepo, repositories } = this.state;
 
         try {
+            repositories.map(repo => {
+                if (repo.name === newRepo) {
+                    throw new Error('Repositório duplicado');
+                }
+            });
+
             const response = await api.get(`/repos/${newRepo}`);
 
             const data = {
@@ -59,14 +65,29 @@ class Main extends Component {
             this.setState({
                 repositories: [...repositories, data],
                 loading: false,
+                repoError: null,
+                newRepo: '',
             });
         } catch (error) {
-            this.setState({ repoError: true, loading: false });
+            let msg;
+
+            if (error.response && error.response.status === 404) {
+                msg = 'Repositório inexistente';
+            } else if (error.message) {
+                msg = 'Repositório duplicado';
+            } else {
+                msg = 'Ocorreu um erro inesperado, tente novamente';
+            }
+
+            this.setState({
+                repoError: msg,
+                loading: false,
+            });
         }
     };
 
     render() {
-        const { loading, repositories, repoError } = this.state;
+        const { loading, repositories, repoError, newRepo } = this.state;
 
         return (
             <Container>
@@ -80,9 +101,10 @@ class Main extends Component {
                         <input
                             type="text"
                             placeholder="Adicionar repositório. Ex: facebook/react "
+                            value={newRepo}
                             onChange={this.handleInputChange}
                         />
-                        {repoError && <p>Repositório inexistente</p>}
+                        {repoError && <p>{repoError}</p>}
                     </div>
 
                     <SubmitButton loading={loading}>
