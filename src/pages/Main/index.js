@@ -67,13 +67,13 @@ class Main extends Component {
             <Container>
                 <h1>
                     <FaGithubAlt />
-                    Respositórios
+                    Repositórios
                 </h1>
 
                 <Form onSubmit={this.handleSubmit}>
                     <input
                         type="text"
-                        placeholder="Adicionar respositório. Ex: facebook/react "
+                        placeholder="Adicionar repositório. Ex: facebook/react "
                         onChange={this.handleInputChange}
                     />
 
