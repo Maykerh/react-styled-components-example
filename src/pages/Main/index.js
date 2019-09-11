@@ -14,6 +14,7 @@ class Main extends Component {
             newRepo: '',
             repositories: [],
             loading: false,
+            repoError: false,
         };
     }
 
@@ -48,20 +49,24 @@ class Main extends Component {
 
         const { newRepo, repositories } = this.state;
 
-        const response = await api.get(`/repos/${newRepo}`);
+        try {
+            const response = await api.get(`/repos/${newRepo}`);
 
-        const data = {
-            name: response.data.full_name,
-        };
+            const data = {
+                name: response.data.full_name,
+            };
 
-        this.setState({
-            repositories: [...repositories, data],
-            loading: false,
-        });
+            this.setState({
+                repositories: [...repositories, data],
+                loading: false,
+            });
+        } catch (error) {
+            this.setState({ repoError: true, loading: false });
+        }
     };
 
     render() {
-        const { loading, repositories } = this.state;
+        const { loading, repositories, repoError } = this.state;
 
         return (
             <Container>
@@ -70,12 +75,15 @@ class Main extends Component {
                     Repositórios
                 </h1>
 
-                <Form onSubmit={this.handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Adicionar repositório. Ex: facebook/react "
-                        onChange={this.handleInputChange}
-                    />
+                <Form onSubmit={this.handleSubmit} repoError={repoError}>
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Adicionar repositório. Ex: facebook/react "
+                            onChange={this.handleInputChange}
+                        />
+                        {repoError && <p>Repositório inexistente</p>}
+                    </div>
 
                     <SubmitButton loading={loading}>
                         {loading ? (
