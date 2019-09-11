@@ -67,7 +67,7 @@ class Main extends Component {
             <Container>
                 <h1>
                     <FaGithubAlt />
-                    Main
+                    Respositórios
                 </h1>
 
                 <Form onSubmit={this.handleSubmit}>
