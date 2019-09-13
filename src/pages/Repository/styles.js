@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
 export const Loading = styled.div`
-    color: #fff;
+    color: #666;
     font-size: 30px;
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100%;
 `;
 
 export const Owner = styled.header`
@@ -43,10 +43,12 @@ export const Owner = styled.header`
 `;
 
 export const IssueList = styled.div`
-    padding-top: 30px;
-    margin-top: 30px;
+    padding-top: 15px;
+    margin-top: 15px;
     border-top: 1px solid #eee;
     list-style: none;
+    height: 455px;
+    overflow-y: auto;
 
     li {
         display: flex;
@@ -99,5 +101,41 @@ export const IssueList = styled.div`
                 color: #999;
             }
         }
+    }
+`;
+
+export const Pagination = styled.div.attrs(props => ({
+    disabled: props.disabled,
+}))`
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 18px;
+    color: #666;
+
+    div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &[disabled] {
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        span {
+            font-size: 14px;
+
+            user-select: none;
+            margin: 0px 5px;
+        }
+    }
+
+    #pipe {
+        border: 1px solid #666;
+        margin: 0px 5px;
+        height: 15px;
     }
 `;

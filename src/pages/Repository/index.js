@@ -1,24 +1,40 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import api from '../../services/api';
 
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, Pagination } from './styles';
 import Container from '../../components/Container';
+import RadioButton from '../../components/RadioButton';
 
 class Repository extends Component {
     constructor(props) {
         super(props);
 
+        this.handleStatus = this.handleStatus.bind(this);
+        this.loadIssues = this.loadIssues.bind(this);
+        this.previousPage = this.previousPage.bind(this);
+        this.nextPage = this.nextPage.bind(this);
+
         this.state = {
             repository: {},
             issues: {},
             loading: true,
+            status: 'closed',
+            page: 1,
         };
     }
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.loadIssues();
+    }
+
+    async loadIssues() {
         const { match } = this.props;
+        const { status, page } = this.state;
+
+        this.setState({ loading: true });
 
         const repoName = decodeURIComponent(match.params.repository);
 
@@ -26,7 +42,8 @@ class Repository extends Component {
             api.get(`/repos/${repoName}`),
             api.get(`/repos/${repoName}/issues`, {
                 params: {
-                    state: 'open',
+                    state: status,
+                    page,
                     per_page: 5,
                 },
             }),
@@ -39,13 +56,37 @@ class Repository extends Component {
         });
     }
 
+    handleStatus(btn) {
+        this.setState(
+            {
+                status: btn.target.id,
+            },
+            this.loadIssues
+        );
+    }
+
+    previousPage() {
+        const { page } = this.state;
+
+        this.setState({ page: page - 1 }, this.loadIssues);
+    }
+
+    nextPage() {
+        const { page } = this.state;
+
+        this.setState({ page: page + 1 }, this.loadIssues);
+    }
+
     render() {
-        const { repository, issues, loading } = this.state;
+        const { repository, issues, loading, status, page } = this.state;
 
         if (loading) {
-            return <Loading>Carregando...</Loading>;
+            return (
+                <Container>
+                    <Loading>Carregando...</Loading>
+                </Container>
+            );
         }
-        console.log(issues);
 
         return (
             <Container>
@@ -58,6 +99,43 @@ class Repository extends Component {
                     <h1>{repository.data.name}</h1>
                     <p>{repository.data.description}</p>
                 </Owner>
+                <div id="toolbar">
+                    <RadioButton active={status}>
+                        <button
+                            onClick={this.handleStatus}
+                            type="button"
+                            id="all"
+                        >
+                            Todas
+                        </button>
+                        <button
+                            onClick={this.handleStatus}
+                            type="button"
+                            id="open"
+                        >
+                            Abertas
+                        </button>
+                        <button
+                            onClick={this.handleStatus}
+                            type="button"
+                            id="closed"
+                        >
+                            Fechadas
+                        </button>
+                    </RadioButton>
+                    <Pagination>
+                        <div disabled={page === 1} onClick={this.previousPage}>
+                            <FaChevronLeft />
+                            <span>Anterior</span>
+                        </div>
+                        <div id="pipe" />
+                        <div onClick={this.nextPage}>
+                            <span>Próxima</span>
+                            <FaChevronRight />
+                        </div>
+                    </Pagination>
+                </div>
+
                 <IssueList>
                     {issues.data.map(issue => (
                         <li key={String(issue.id)}>
