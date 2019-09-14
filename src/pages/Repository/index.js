@@ -79,6 +79,7 @@ class Repository extends Component {
 
     render() {
         const { repository, issues, loading, status, page } = this.state;
+        const disabled = page === 1;
 
         if (loading) {
             return (
@@ -124,7 +125,10 @@ class Repository extends Component {
                         </button>
                     </RadioButton>
                     <Pagination>
-                        <div disabled={page === 1} onClick={this.previousPage}>
+                        <div
+                            disabled={disabled}
+                            onClick={disabled ? () => {} : this.previousPage}
+                        >
                             <FaChevronLeft />
                             <span>Anterior</span>
                         </div>

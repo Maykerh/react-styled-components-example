@@ -119,6 +119,7 @@ export const Pagination = styled.div.attrs(props => ({
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
 
         &[disabled] {
             cursor: not-allowed;
